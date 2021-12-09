@@ -3,17 +3,18 @@ from dateutil.relativedelta import relativedelta
 import pymysql
 from sqlalchemy import create_engine
 import pandas as pd
+import privateToken
 
 class dbSearcher:
     def __init__(self):
         self.coin_db = pymysql.connect(
-            user='root',
-            passwd='Dares765!',
-            host='127.0.0.1',
+            user=privateToken.DB_user,
+            passwd=privateToken.DB_password,
+            host=privateToken.DB_ip,
             db='coin-db',
             charset='utf8'
         )
-        self.engine = create_engine("mysql+pymysql://root:" + "Dares765!" + "@127.0.0.1:3306/coin-db?charset=utf8", encoding='utf-8')
+        self.engine = create_engine("mysql+pymysql://"+privateToken.DB_user+":" + privateToken.DB_password + "@"+privateToken.DB_ip+":"+privateToken.DB_port+"/coin-db?charset=utf8", encoding='utf-8')
 
     ### appendonDB: DB에 데이터 추가하기 (INSERT)
     #requester.py에서 데이터를 받아온 데이터를 DB에 저장함
@@ -49,7 +50,7 @@ class dbSearcher:
     # ___fromcounts: datetime_from부터 counts 수만큼 (inclusive) 캔들 데이터 추출 = 반환형(Dataframe)  --  빠진 캔들이 있을 수 있으므로 count보다 실제 더 적을수도 있음!
     # ___tocounts: ~ datetime_to까지의 counts 수만큼 (inclusive) 캔들 데이터 추출 = 반환형(Dataframe)  --  빠진 캔들이 있을 수 있으므로 count보다 실제 더 적을수도 있음!
     def get_1Day_Candle_range(self, tickers, datetime_from, datetime_to):
-        self.coin_db = pymysql.connect(host='localhost', port=3306, user='root', password='Dares765!', db='coin-db',
+        self.coin_db = pymysql.connect(host='localhost', port=3306, user=privateToken.DB_user, password=privateToken.DB_password, db='coin-db',
                                      charset='utf8', autocommit=True, cursorclass=pymysql.cursors.DictCursor)
         cursor = self.coin_db.cursor()
         _from = datetime_from.strftime("%Y-%m-%d 09:00:00")
@@ -60,7 +61,7 @@ class dbSearcher:
         result = cursor.fetchall()
         return pd.DataFrame(result).drop_duplicates().sort_values(by=['candle_date_time_kst'], ascending=True).reset_index()
     def get_1Day_Candle_fromcounts(self, tickers, datetime_from, counts):
-        self.coin_db = pymysql.connect(host='localhost', port=3306, user='root', password='Dares765!', db='coin-db',
+        self.coin_db = pymysql.connect(host='localhost', port=3306, user=privateToken.DB_user, password=privateToken.DB_password, db='coin-db',
                                      charset='utf8', autocommit=True, cursorclass=pymysql.cursors.DictCursor)
         cursor = self.coin_db.cursor()
         _from = datetime_from.strftime("%Y-%m-%d 09:00:00")
@@ -71,7 +72,7 @@ class dbSearcher:
         result = cursor.fetchall()
         return pd.DataFrame(result).drop_duplicates().sort_values(by=['candle_date_time_kst'], ascending=True).reset_index()
     def get_1Day_Candle_tocounts(self, tickers, datetime_to, counts):
-        self.coin_db = pymysql.connect(host='localhost', port=3306, user='root', password='Dares765!', db='coin-db',
+        self.coin_db = pymysql.connect(host='localhost', port=3306, user=privateToken.DB_user, password=privateToken.DB_password, db='coin-db',
                                      charset='utf8', autocommit=True, cursorclass=pymysql.cursors.DictCursor)
         cursor = self.coin_db.cursor()
         _from = (datetime_to - datetime.timedelta(days=counts)).strftime("%Y-%m-%d 09:00:00")
@@ -83,7 +84,7 @@ class dbSearcher:
         return pd.DataFrame(result).drop_duplicates().sort_values(by=['candle_date_time_kst'], ascending=True).reset_index()
 
     def get_1Week_Candle_range(self, tickers, datetime_from, datetime_to):
-        self.coin_db = pymysql.connect(host='localhost', port=3306, user='root', password='Dares765!', db='coin-db',
+        self.coin_db = pymysql.connect(host='localhost', port=3306, user=privateToken.DB_user, password=privateToken.DB_password, db='coin-db',
                                      charset='utf8', autocommit=True, cursorclass=pymysql.cursors.DictCursor)
         cursor = self.coin_db.cursor()
         _from = datetime_from.strftime("%Y-%m-%d 09:00:00")
@@ -97,7 +98,7 @@ class dbSearcher:
         return df
 
     def get_1Week_Candle_fromcounts(self, tickers, datetime_from, counts):
-        self.coin_db = pymysql.connect(host='localhost', port=3306, user='root', password='Dares765!', db='coin-db',
+        self.coin_db = pymysql.connect(host='localhost', port=3306, user=privateToken.DB_user, password=privateToken.DB_password, db='coin-db',
                                      charset='utf8', autocommit=True, cursorclass=pymysql.cursors.DictCursor)
         cursor = self.coin_db.cursor()
         _from = datetime_from.strftime("%Y-%m-%d 09:00:00")
@@ -110,7 +111,7 @@ class dbSearcher:
         df.set_index(df['candle_date_time_kst'], inplace=True)
         return df
     def get_1Week_Candle_tocounts(self, tickers, datetime_to, counts):
-        self.coin_db = pymysql.connect(host='localhost', port=3306, user='root', password='Dares765!', db='coin-db',
+        self.coin_db = pymysql.connect(host='localhost', port=3306, user=privateToken.DB_user, password=privateToken.DB_password, db='coin-db',
                                      charset='utf8', autocommit=True, cursorclass=pymysql.cursors.DictCursor)
         cursor = self.coin_db.cursor()
         _from = (datetime_to - datetime.timedelta(weeks=counts)).strftime("%Y-%m-%d 09:00:00")
@@ -124,7 +125,7 @@ class dbSearcher:
         return df
 
     def get_1Month_Candle_range(self, tickers, datetime_from, datetime_to):
-        self.coin_db = pymysql.connect(host='localhost', port=3306, user='root', password='Dares765!', db='coin-db',
+        self.coin_db = pymysql.connect(host='localhost', port=3306, user=privateToken.DB_user, password=privateToken.DB_password, db='coin-db',
                                      charset='utf8', autocommit=True, cursorclass=pymysql.cursors.DictCursor)
         cursor = self.coin_db.cursor()
         _from = datetime_from.strftime("%Y-%m-%d 09:00:00")
@@ -137,7 +138,7 @@ class dbSearcher:
         df.set_index(df['candle_date_time_kst'], inplace=True)
         return df
     def get_1Month_Candle_fromcounts(self, tickers, datetime_from, counts):
-        self.coin_db = pymysql.connect(host='localhost', port=3306, user='root', password='Dares765!', db='coin-db',
+        self.coin_db = pymysql.connect(host='localhost', port=3306, user=privateToken.DB_user, password=privateToken.DB_password, db='coin-db',
                                      charset='utf8', autocommit=True, cursorclass=pymysql.cursors.DictCursor)
         cursor = self.coin_db.cursor()
         _from = datetime_from.strftime("%Y-%m-%d 09:00:00")
@@ -150,7 +151,7 @@ class dbSearcher:
         df.set_index(df['candle_date_time_kst'], inplace=True)
         return df
     def get_1Month_Candle_tocounts(self, tickers, datetime_to, counts):
-        self.coin_db = pymysql.connect(host='localhost', port=3306, user='root', password='Dares765!', db='coin-db',
+        self.coin_db = pymysql.connect(host='localhost', port=3306, user=privateToken.DB_user, password=privateToken.DB_password, db='coin-db',
                                      charset='utf8', autocommit=True, cursorclass=pymysql.cursors.DictCursor)
         cursor = self.coin_db.cursor()
         _from = (datetime_to - relativedelta(months=counts)).strftime("%Y-%m-%d 09:00:00")
@@ -164,7 +165,7 @@ class dbSearcher:
         return df
 
     def get_Minutes_Candle_range(self, tickers, datetime_from, datetime_to, unit=1):
-        self.coin_db = pymysql.connect(host='localhost', port=3306, user='root', password='Dares765!', db='coin-db',
+        self.coin_db = pymysql.connect(host='localhost', port=3306, user=privateToken.DB_user, password=privateToken.DB_password, db='coin-db',
                                      charset='utf8', autocommit=True, cursorclass=pymysql.cursors.DictCursor)
         cursor = self.coin_db.cursor()
         _from = datetime_from.strftime("%Y-%m-%d %H:%M:00")
@@ -177,7 +178,7 @@ class dbSearcher:
         df.set_index(df['candle_date_time_kst'], inplace=True)
         return df
     def get_Minutes_Candle_fromcounts(self, tickers, datetime_from, counts, unit=1):
-        self.coin_db = pymysql.connect(host='localhost', port=3306, user='root', password='Dares765!', db='coin-db',
+        self.coin_db = pymysql.connect(host='localhost', port=3306, user=privateToken.DB_user, password=privateToken.DB_password, db='coin-db',
                                      charset='utf8', autocommit=True, cursorclass=pymysql.cursors.DictCursor)
         cursor = self.coin_db.cursor()
         _from = datetime_from.strftime("%Y-%m-%d %H:%M:00")
@@ -190,7 +191,7 @@ class dbSearcher:
         df.set_index(df['candle_date_time_kst'], inplace=True)
         return df
     def get_Minutes_Candle_tocounts(self, tickers, datetime_to, counts, unit=1):
-        self.coin_db = pymysql.connect(host='localhost', port=3306, user='root', password='Dares765!', db='coin-db',
+        self.coin_db = pymysql.connect(host='localhost', port=3306, user=privateToken.DB_user, password=privateToken.DB_password, db='coin-db',
                                      charset='utf8', autocommit=True, cursorclass=pymysql.cursors.DictCursor)
         cursor = self.coin_db.cursor()
         _from = (datetime_to - datetime.timedelta(minutes=counts*unit)).strftime("%Y-%m-%d %H:%M:00")

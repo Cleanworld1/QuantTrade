@@ -1,25 +1,26 @@
 import datetime
-import talib
 import index
 import requester
 import coinDB
 from backtesting import Backtest
+import privateToken
 
 
-
-requester = requester.Requester()
-dbsearcher = coinDB.dbSearcher()
+requester = requester.Requester()       # UPBIT 서버로 봉 차트 데이터 가져와서 DB에 저장하는 클래스
+dbsearcher = coinDB.dbSearcher()        # DB에 저장된 봉 차트 데이터를 불러오는 클래스
 
 
 trading_tickers = ['KRW-BTC', 'KRW-ETH', 'KRW-NEO', 'KRW-MTL', 'KRW-LTC', 'KRW-XRP', 'KRW-ETC', 'KRW-OMG', 'KRW-SNT', 'KRW-WAVES', 'KRW-XEM', 'KRW-QTUM', 'KRW-LSK', 'KRW-STEEM', 'KRW-XLM', 'KRW-ARDR', 'KRW-ARK', 'KRW-STORJ', 'KRW-GRS', 'KRW-REP', 'KRW-ADA', 'KRW-SBD', 'KRW-POWR', 'KRW-BTG', 'KRW-ICX', 'KRW-EOS', 'KRW-TRX', 'KRW-SC', 'KRW-ONT', 'KRW-ZIL', 'KRW-POLY', 'KRW-ZRX', 'KRW-LOOM', 'KRW-BCH', 'KRW-BAT', 'KRW-IOST', 'KRW-RFR', 'KRW-CVC', 'KRW-IQ', 'KRW-IOTA', 'KRW-MFT', 'KRW-ONG', 'KRW-GAS', 'KRW-UPP', 'KRW-ELF', 'KRW-KNC', 'KRW-BSV', 'KRW-THETA', 'KRW-QKC', 'KRW-BTT', 'KRW-MOC', 'KRW-ENJ', 'KRW-TFUEL', 'KRW-MANA', 'KRW-ANKR', 'KRW-AERGO', 'KRW-ATOM', 'KRW-TT', 'KRW-CRE', 'KRW-MBL', 'KRW-WAXP', 'KRW-HBAR', 'KRW-MED', 'KRW-MLK', 'KRW-STPT', 'KRW-ORBS', 'KRW-VET', 'KRW-CHZ', 'KRW-STMX', 'KRW-DKA', 'KRW-HIVE', 'KRW-KAVA', 'KRW-AHT', 'KRW-LINK', 'KRW-XTZ', 'KRW-BORA', 'KRW-JST', 'KRW-CRO', 'KRW-TON', 'KRW-SXP', 'KRW-HUNT', 'KRW-PLA', 'KRW-DOT', 'KRW-SRM', 'KRW-MVL', 'KRW-STRAX', 'KRW-AQT', 'KRW-GLM', 'KRW-SSX', 'KRW-META', 'KRW-FCT2', 'KRW-CBK', 'KRW-SAND', 'KRW-HUM', 'KRW-DOGE', 'KRW-STRK', 'KRW-PUNDIX', 'KRW-FLOW', 'KRW-DAWN', 'KRW-AXS', 'KRW-STX', 'KRW-XEC', 'KRW-SOL', 'KRW-MATIC', 'KRW-NU', 'KRW-AAVE', 'KRW-1INCH', 'KRW-ALGO']
-print(trading_tickers)
+#print(trading_tickers)
 
 
-## 코인 정보 저장하는 부분 (완료)
+### 코인 서지정보 저장하는 부분 (완료)
 #coinDB.dbSearcher().appendonDB_marketInfo(requester.seeAllTickers())
 
-## 코인 데이터 가져오기 ( 주석 해제하여 가져오기 )
-for tickers in trading_tickers:
+
+### 코인 데이터 가져오기 ( 주석 해제하여 가져오기 )
+
+#for tickers in trading_tickers:
     ## 월봉 데이터 가져오기 (완료)
     #monthData = requester.seePrices_1Month(ticker=tickers)
     #coinDB.dbSearcher().appendonDB_candles_months(monthData)
@@ -56,11 +57,11 @@ for tickers in trading_tickers:
     #min1Data = requester.seePrices_Minutes(ticker=tickers, unit=1)
     #coinDB.dbSearcher().appendonDB_candles_minutes(min1Data, unit=1)
 
-    print(tickers + " is saved on DB!")
+    #print(tickers + " is saved on DB!")
 
 
-## DB 연결 테스트하는 코드
-#connection = pymysql.connect(host='localhost', port=3306, user='root', password='Dares765!', db='coin-db', charset='utf8', autocommit=True, cursorclass=pymysql.cursors.DictCursor)
+### DB 연결 테스트하는 코드
+#connection = pymysql.connect(host='localhost', port=3306, user=privateToken.DB_ip, password=privateToken.DB_password, db='coin-db', charset='utf8', autocommit=True, cursorclass=pymysql.cursors.DictCursor)
 #cursor = connection.cursor()
 #sql = "SELECT * FROM `candles_months`;"
 #cursor.execute(sql)
@@ -87,12 +88,12 @@ df = dbsearcher.get_Minutes_Candle_range(tickers="KRW-BTC", datetime_from=dateti
 #dbsearcher.get_Minutes_Candle_tocounts(tickers="KRW-BTC", datetime_to=datetime.datetime(year=2021, month=11, day=14, hour=9, minute=0), counts=5000, unit=10)
 
 
-### dataframe을 backtesting 사용 가능하게 form 바꿈
+### dataframe을 backtesting 사용 가능하게 data form 바꿈
 df = dbsearcher.form_backtesting(df)
 print(df)
 
 
-bt = Backtest(df, index.SmaCross, cash=100_000_000_000, commission=.002)
+bt = Backtest(df, index.SmaCross, cash=100_000_000, commission=.002)
 stats = bt.run()
 print(stats)
 bt.plot()
